@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>{c8a4a982-1dd0-4f34-96d9-18eaab16f758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="library">
+      <UniqueIdentifier>{eeff27ac-32c5-47c6-9602-c98b7fed9429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="library\ashes">
+      <UniqueIdentifier>{7e7ed4c7-f667-47d5-acd2-dfc313fcff3e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\library\ashes\console.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\consoleapp.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\coord.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\direction4.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\random.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\rect.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\time.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\timermanager.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="chessboard.h" />
+    <ClInclude Include="jiugongchess.h" />
+    <ClInclude Include="..\library\ashes\winapi.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\graph.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="gamesolver.h" />
+    <ClInclude Include="gameai.h" />
+    <ClInclude Include="gameapp.h" />
+    <ClInclude Include="..\library\ashes\eventdispatcher.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\math.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="res\resource.h">
+      <Filter>res</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\library\ashes\console.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\consoleapp.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\timermanager.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="chessboard.cpp" />
+    <ClCompile Include="jiugongchess.cpp" />
+    <ClCompile Include="..\library\ashes\winapi.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\graph.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="gamesolver.cpp" />
+    <ClCompile Include="gameai.cpp" />
+    <ClCompile Include="gameapp.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\dat1.bin" />
+    <None Include="res\gameaidatabase.dat">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\resource.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
