@@ -159,7 +159,6 @@
     <ClInclude Include="res\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\dat1.bin" />
     <None Include="res\gameaidatabase.dat" />
   </ItemGroup>
   <ItemGroup>

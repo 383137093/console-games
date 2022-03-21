@@ -81,7 +81,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\dat1.bin" />
     <None Include="res\gameaidatabase.dat">
       <Filter>res</Filter>
     </None>
