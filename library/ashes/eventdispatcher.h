@@ -1,4 +1,4 @@
-#ifndef ASHES_EVENTDISPATCHER_H
+﻿#ifndef ASHES_EVENTDISPATCHER_H
 #define ASHES_EVENTDISPATCHER_H
 
 #include <vector>
