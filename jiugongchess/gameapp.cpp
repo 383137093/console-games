@@ -138,6 +138,7 @@ void GameApp::OnInit()
 	console.Resize(MeasureGameWindowSize());
 	console.Center();
 	console.SetUnresizable();
+	console.SetCodePage(CP_UTF8);
 	console.SetTitle(TEXT("九宫棋 4.0 [ @南城边 ]"));
 	console.SetUneditable();
 

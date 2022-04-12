@@ -21,6 +21,7 @@ void GameApp::OnInit()
 	// setup console.
 	ashes::Console& console = ashes::GConsole();
 	console.SetUnresizable();
+	console.SetCodePage(CP_UTF8);
 	console.SetTitle(TEXT("贪吃蛇 3.0 [ @南城边 ]"));
 	console.SetUneditable();
 	GetRenderer().SetupConsole(game_);
