@@ -56,7 +56,6 @@ public:
 	void WaitEvent(INPUT_RECORD& event);
 	
 	// Measure
-	static SHORT MeasureWidth(char ch);
 	static SHORT MeasureWidth(wchar_t ch);
 	static SHORT MeasureWidth(const char* str);
 	static SHORT MeasureWidth(const wchar_t* str);
@@ -79,27 +78,52 @@ public:
 
 private:
 
+	//==========================================================================
 	// Special functions
+	//==========================================================================
+
 	Console();
 	Console(const Console&) = delete;
 	~Console();
 	Console& operator = (const Console&) = delete;
 
+	//==========================================================================
 	// Align and clamp: align and clamp by anchor, aslo clamp by clip,
 	// output clamped index/coord range to indexes/anchor.
-	static void LeftAlignClamp(const String& str, CoordRange& anchor,
+	//==========================================================================
+
+	static void HoriLeftAlignClamp(const std::wstring& str, CoordRange& anchor,
 		const CoordRange& clip, CoordRange& indexes);
-	static void MidAlignClamp(const String& str, CoordRange& anchor,
+
+	static void HoriMidAlignClamp(const std::wstring& str, CoordRange& anchor,
 		const CoordRange& clip, CoordRange& indexes);
-	static void MidAlignClamp(const StringVector& strs, CoordRange& anchor,
+
+	static void VertMidAlignClamp(std::size_t num_strs, CoordRange& anchor,
 		CoordRange& indexes);
 
-	// Draw implementation
+	//==========================================================================
+	// Draw implementation: use wstring for underlying implementation always.
+	//==========================================================================
+
 	const graph::Border& GetBorder(const graph::Border* specified_border) const;
-	void WriteOutput(const String& str, const CoordRange& indexes,
+
+	Rect DrawStringA(const std::string& str, const Coord& coord, WORD color);
+	Rect DrawStringA(const std::string& str, const Rect& rect, WORD color);
+	Rect DrawStringsA(const std::vector<std::string>& strs,
+		const Rect& rect, WORD color);
+
+	Rect DrawStringW(const std::wstring& str, const Coord& coord, WORD color);
+	Rect DrawStringW(const std::wstring& str, const Rect& rect, WORD color);
+	Rect DrawStringsW(const std::vector<std::wstring>& strs,
+		const Rect& rect, WORD color);
+
+	void WriteOutput(const std::wstring& str, const CoordRange& indexes,
 		const CoordRange& xrange, SHORT y, WORD color);
 
+	//==========================================================================
 	// Double buffer implementation
+	//==========================================================================
+
 	bool CreateDoubleBuffer();
 	void DestroyDoubleBuffer();
 

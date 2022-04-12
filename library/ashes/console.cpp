@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cassert>
 #include <algorithm>
+#include "winapi.h"
 
 namespace ashes {
 
@@ -25,7 +26,7 @@ bool ResizeConsoleBuffer(HANDLE console, Coord size)
 	return ::SetConsoleScreenBufferInfoEx(console, &info);
 }
 
-void ModifyCharInfo(CHAR_INFO& ci, WCHAR ch, WORD lvb_attributes, WORD color)
+void ModifyCharInfo(CHAR_INFO& ci, wchar_t ch, WORD lvb_attributes, WORD color)
 {
 	ci.Char.UnicodeChar = ch;
 	ci.Attributes = (ci.Attributes & 0xFF) | lvb_attributes;
@@ -178,11 +179,6 @@ void Console::WaitEvent(INPUT_RECORD& event)
 	assert(readed_number == 1);
 }
 
-SHORT Console::MeasureWidth(char ch)
-{
-	return ::iswascii(ch) || ::IsDBCSLeadByteEx(::GetConsoleOutputCP(), ch) ? 1 : 0;
-}
-
 SHORT Console::MeasureWidth(wchar_t ch)
 {
 	return ::iswascii(ch) ? 1 : 2;
@@ -190,9 +186,7 @@ SHORT Console::MeasureWidth(wchar_t ch)
 
 SHORT Console::MeasureWidth(const char* str)
 {
-	SHORT width = 0;
-	for (; *str; ++str) { width += MeasureWidth(*str); };
-	return width;
+	return MeasureWidth(win::A2W(str, -1, ::GetConsoleCP()).data());
 }
 
 SHORT Console::MeasureWidth(const wchar_t* str)
@@ -214,17 +208,18 @@ void Console::DrawColor(WORD color, const Rect& rect)
 
 		// read char infos inside rect region.
 		Rect read_region = clamped_rect;
-		success = ::ReadConsoleOutput(output_, elem_buffer_.data(),
+		success = ::ReadConsoleOutputW(output_, elem_buffer_.data(),
 			clamped_size, {0, 0}, &read_region);
 		assert(success);
 	
 		// modify color attributes in char infos.
-		std::for_each(elem_buffer_.begin(), elem_buffer_.end(), [color](CHAR_INFO& ci) {
-			ci.Attributes = graph::BlendColor(ci.Attributes, color); });
+		std::for_each(elem_buffer_.begin(), elem_buffer_.end(), 
+			[color](CHAR_INFO& ci) {
+				ci.Attributes = graph::BlendColor(ci.Attributes, color); });
 
 		// write char infos back to rect region.
 		Rect write_region = clamped_rect;
-		success = ::WriteConsoleOutput(output_, elem_buffer_.data(),
+		success = ::WriteConsoleOutputW(output_, elem_buffer_.data(),
 			clamped_size, {0, 0}, &write_region);
 		assert(success);
 	}
@@ -232,43 +227,20 @@ void Console::DrawColor(WORD color, const Rect& rect)
 
 Rect Console::DrawString(const String& str, const Coord& coord, WORD color)
 {
-	const Rect clip = Region();
-
-	if (!str.empty() && (clip.Top <= coord.Y && coord.Y <= clip.Bottom))
-	{
-		CoordRange anchor = {coord.X, clip.Right};
-		CoordRange indexes;
-		LeftAlignClamp(str, anchor, {clip.Left, clip.Right}, indexes);
-
-		if (indexes.first <= indexes.second)
-		{
-			WriteOutput(str, indexes, anchor, coord.Y, color);
-			return {anchor.first, coord.Y, anchor.second, coord.Y};
-		}
-	}
-	
-	return {{0, 0}, {0, 0}};
+#ifdef UNICODE
+	return DrawStringW(str, coord, color);
+#else
+	return DrawStringA(str, coord, color);
+#endif
 }
 
 Rect Console::DrawString(const String& str, const Rect& rect, WORD color)
 {
-	const Rect clip = Region();
-	const SHORT y = (rect.Top + rect.Bottom) / 2;
-
-	if (!str.empty() && !rect.IsEmpty() && (clip.Top <= y && y <= clip.Bottom))
-	{
-		CoordRange anchor = {rect.Left, rect.Right};
-		CoordRange indexes;
-		MidAlignClamp(str, anchor, {clip.Left, clip.Right}, indexes);
-
-		if (indexes.first <= indexes.second)
-		{
-			WriteOutput(str, indexes, anchor, y, color);
-			return {anchor.first, y, anchor.second, y};
-		}
-	}
-
-	return {{0, 0}, {0, 0}};
+#ifdef UNICODE
+	return DrawStringW(str, rect, color);
+#else
+	return DrawStringA(str, rect, color);
+#endif
 }
 
 void Console::DrawBlank(const Rect& rect, WORD color)
@@ -283,17 +255,17 @@ void Console::DrawBlank(const Rect& rect, WORD color)
 
 		// read char infos inside rect region.
 		Rect read_region = clamped_rect;
-		success = ::ReadConsoleOutput(output_, elem_buffer_.data(),
+		success = ::ReadConsoleOutputW(output_, elem_buffer_.data(),
 			clamped_size, {0, 0}, &read_region);
 		assert(success);
 
 		// modify character and color attributes in char infos.
 		std::for_each(elem_buffer_.begin(), elem_buffer_.end(), 
-			[color](CHAR_INFO& ci) { ModifyCharInfo(ci, TEXT(' '), 0, color); });
+			[color](CHAR_INFO& ci) { ModifyCharInfo(ci, L' ', 0, color); });
 
 		// write char infos back to rect region.
 		Rect write_region = clamped_rect;
-		success = ::WriteConsoleOutput(output_, elem_buffer_.data(),
+		success = ::WriteConsoleOutputW(output_, elem_buffer_.data(),
 			clamped_size, {0, 0}, &write_region);
 		assert(success);
 	}
@@ -348,34 +320,11 @@ Rect Console::DrawStrings(
 	const Rect& rect,
 	WORD color)
 {
-	const Rect clip = Region();
-	CoordRange xrange = {rect.Right, rect.Left};
-
-	CoordRange yanchor = {rect.Top, rect.Bottom};
-	CoordRange yindexes;
-	MidAlignClamp(strs, yanchor, yindexes);
-
-	for (SHORT y = yanchor.first ; y <= yanchor.second ; ++y)
-	{
-		const String& str = strs[y - yanchor.first + yindexes.first];
-		CoordRange xanchor = {rect.Left, rect.Right};
-		CoordRange xindexes;
-		MidAlignClamp(str, xanchor, {clip.Left, clip.Right}, xindexes);
-
-		if (xindexes.first <= xindexes.second)
-		{
-			// consider x-range of current string line, even we can't show it.
-			xrange.first  = (std::min)(xrange.first,  xanchor.first);
-			xrange.second = (std::max)(xrange.second, xanchor.second);
-			
-			if (clip.Top <= y && y <= clip.Bottom)
-			{
-				WriteOutput(str, xindexes, xanchor, y, color);
-			}
-		}
-	}
-
-	return {xrange.first, yanchor.first, xrange.second, yanchor.second};
+#ifdef UNICODE
+	return DrawStringsW(strs, rect, color);
+#else
+	return DrawStringsA(strs, rect, color);
+#endif
 }
 
 Rect Console::DrawFramedStrings(
@@ -415,13 +364,13 @@ void Console::FlushDoubleBuffer()
 
 	// read all char info from memory double buffer.
 	Rect read_region = {{0, 0}, buffer_size};
-	success = ::ReadConsoleOutput(memory_output_, elem_buffer_.data(),
+	success = ::ReadConsoleOutputW(memory_output_, elem_buffer_.data(),
 		buffer_size, {0, 0}, &read_region);
 	assert(success);
 
 	// write all char info to console window buffer.
 	Rect write_region = {{0, 0}, buffer_size};
-	success = ::WriteConsoleOutput(window_output_, elem_buffer_.data(),
+	success = ::WriteConsoleOutputW(window_output_, elem_buffer_.data(),
 		buffer_size, {0, 0}, &write_region);
 	assert(success);
 }
@@ -444,8 +393,8 @@ Console::~Console()
 	DestroyDoubleBuffer();
 }
 
-void Console::LeftAlignClamp(
-	const String& str,
+void Console::HoriLeftAlignClamp(
+	const std::wstring& str,
 	CoordRange& anchor,
 	const CoordRange& clip,
 	CoordRange& indexes)
@@ -481,8 +430,8 @@ void Console::LeftAlignClamp(
 	anchor.second = char2.x - 1;
 }
 
-void Console::MidAlignClamp(
-	const String& str,
+void Console::HoriMidAlignClamp(
+	const std::wstring& str,
 	CoordRange& anchor,
 	const CoordRange& clip,
 	CoordRange& indexes)
@@ -499,17 +448,17 @@ void Console::MidAlignClamp(
 	anchor.first  = anchor_mid - (str_width + mid_offset) / 2;
 	anchor.second = anchor.first + str_width - 1;
 
-	LeftAlignClamp(str, anchor, {combined_first, combined_second}, indexes);
+	HoriLeftAlignClamp(str, anchor, {combined_first, combined_second}, indexes);
 }
 
-void Console::MidAlignClamp(
-	const StringVector& strs, 
+void Console::VertMidAlignClamp(
+	std::size_t num_strs,
 	CoordRange& anchor,
 	CoordRange& indexes)
 {
 	const SHORT anchor_mid = (anchor.first + anchor.second) / 2;
 	const SHORT mid_offset = 2 * anchor_mid - (anchor.first + anchor.second);
-	const SHORT str_number = static_cast<SHORT>(strs.size());
+	const SHORT str_number = static_cast<SHORT>(num_strs);
 
 	SHORT first  = anchor_mid - (str_number + mid_offset) / 2;
 	SHORT second = first + str_number - 1;
@@ -526,8 +475,130 @@ const graph::Border& Console::GetBorder(const graph::Border* specified_border) c
 	return specified_border == nullptr ? default_border_ : *specified_border;
 }
 
+Rect Console::DrawStringA(const std::string& str, const Coord& coord, WORD color)
+{
+	return DrawStringW(win::A2W(str, ::GetConsoleCP()), coord, color);
+}
+
+Rect Console::DrawStringA(const std::string& str, const Rect& rect, WORD color)
+{
+	return DrawStringW(win::A2W(str, ::GetConsoleCP()), rect, color);
+}
+
+Rect Console::DrawStringsA(
+	const std::vector<std::string>& strs,
+	const Rect& rect,
+	WORD color)
+{
+	const Rect clip = Region();
+	CoordRange xrange = {rect.Right, rect.Left};
+
+	CoordRange yanchor = {rect.Top, rect.Bottom};
+	CoordRange yindexes;
+	VertMidAlignClamp(strs.size(), yanchor, yindexes);
+
+	for (SHORT y = yanchor.first ; y <= yanchor.second ; ++y)
+	{
+		const std::string& str = strs[y - yanchor.first + yindexes.first];
+		std::wstring wstr = win::A2W(str, ::GetConsoleCP());
+		CoordRange xanchor = {rect.Left, rect.Right};
+		CoordRange xindexes;
+		HoriMidAlignClamp(wstr, xanchor, {clip.Left, clip.Right}, xindexes);
+
+		if (xindexes.first <= xindexes.second)
+		{
+			// consider x-range of current string line, even we can't show it.
+			xrange.first  = (std::min)(xrange.first,  xanchor.first);
+			xrange.second = (std::max)(xrange.second, xanchor.second);
+			
+			if (clip.Top <= y && y <= clip.Bottom)
+			{
+				WriteOutput(wstr, xindexes, xanchor, y, color);
+			}
+		}
+	}
+
+	return {xrange.first, yanchor.first, xrange.second, yanchor.second};
+}
+
+Rect Console::DrawStringW(const std::wstring& str, const Coord& coord, WORD color)
+{
+	const Rect clip = Region();
+
+	if (!str.empty() && (clip.Top <= coord.Y && coord.Y <= clip.Bottom))
+	{
+		CoordRange anchor = {coord.X, clip.Right};
+		CoordRange indexes;
+		HoriLeftAlignClamp(str, anchor, {clip.Left, clip.Right}, indexes);
+
+		if (indexes.first <= indexes.second)
+		{
+			WriteOutput(str, indexes, anchor, coord.Y, color);
+			return {anchor.first, coord.Y, anchor.second, coord.Y};
+		}
+	}
+	
+	return {{0, 0}, {0, 0}};
+}
+
+Rect Console::DrawStringW(const std::wstring& str, const Rect& rect, WORD color)
+{
+	const Rect clip = Region();
+	const SHORT y = (rect.Top + rect.Bottom) / 2;
+
+	if (!str.empty() && !rect.IsEmpty() && (clip.Top <= y && y <= clip.Bottom))
+	{
+		CoordRange anchor = {rect.Left, rect.Right};
+		CoordRange indexes;
+		HoriMidAlignClamp(str, anchor, {clip.Left, clip.Right}, indexes);
+
+		if (indexes.first <= indexes.second)
+		{
+			WriteOutput(str, indexes, anchor, y, color);
+			return {anchor.first, y, anchor.second, y};
+		}
+	}
+
+	return {{0, 0}, {0, 0}};
+}
+
+Rect Console::DrawStringsW(
+	const std::vector<std::wstring>& strs,
+	const Rect& rect,
+	WORD color)
+{
+	const Rect clip = Region();
+	CoordRange xrange = {rect.Right, rect.Left};
+
+	CoordRange yanchor = {rect.Top, rect.Bottom};
+	CoordRange yindexes;
+	VertMidAlignClamp(strs.size(), yanchor, yindexes);
+
+	for (SHORT y = yanchor.first ; y <= yanchor.second ; ++y)
+	{
+		const std::wstring& str = strs[y - yanchor.first + yindexes.first];
+		CoordRange xanchor = {rect.Left, rect.Right};
+		CoordRange xindexes;
+		HoriMidAlignClamp(str, xanchor, {clip.Left, clip.Right}, xindexes);
+
+		if (xindexes.first <= xindexes.second)
+		{
+			// consider x-range of current string line, even we can't show it.
+			xrange.first  = (std::min)(xrange.first,  xanchor.first);
+			xrange.second = (std::max)(xrange.second, xanchor.second);
+			
+			if (clip.Top <= y && y <= clip.Bottom)
+			{
+				WriteOutput(str, xindexes, xanchor, y, color);
+			}
+		}
+	}
+
+	return {xrange.first, yanchor.first, xrange.second, yanchor.second};
+}
+
 void Console::WriteOutput(
-	const String& str,
+	const std::wstring& str,
 	const CoordRange& indexes,
 	const CoordRange& xrange,
 	SHORT y,
@@ -542,14 +613,14 @@ void Console::WriteOutput(
 
 	// read char infos at line coord.Y.
 	Rect read_region = region;
-	success = ::ReadConsoleOutput(output_, elem_buffer_.data(),
+	success = ::ReadConsoleOutputW(output_, elem_buffer_.data(),
 		region.Size(), {0, 0}, &read_region);
 	assert(success);
 
 	// modify character and color attributes in char infos.	
 	for (SHORT idx = indexes.first; idx <= indexes.second; ++idx)
 	{
-		const TCHAR ch = str[idx];
+		const wchar_t ch = str[idx];
 		const SHORT width = MeasureWidth(ch);
 
 		if (width == 2)
@@ -565,7 +636,7 @@ void Console::WriteOutput(
 
 	// write char infos back to line coord.Y
 	Rect write_region = region;
-	success = ::WriteConsoleOutput(output_, elem_buffer_.data(), 
+	success = ::WriteConsoleOutputW(output_, elem_buffer_.data(), 
 		region.Size(), {0, 0}, &write_region);
 	assert(success);
 }
