@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9177677D-5421-4D7E-B9DB-383FC6AD58D1}</ProjectGuid>
-    <RootNamespace>My30</RootNamespace>
+    <ProjectGuid>{AA9664C4-D048-44C4-8193-ED4368F54121}</ProjectGuid>
+    <RootNamespace>GluttonousSnake</RootNamespace>
     <ProjectName>GluttonousSnake</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
