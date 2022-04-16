@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="library">
+      <UniqueIdentifier>{eeff27ac-32c5-47c6-9602-c98b7fed9429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="library\ashes">
+      <UniqueIdentifier>{7e7ed4c7-f667-47d5-acd2-dfc313fcff3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{1aa83b28-5142-40cc-b4b9-8444b56efe5e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\library\ashes\console.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\consoleapp.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\coord.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\direction4.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\random.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\rect.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\time.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\timermanager.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\winapi.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\graph.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\eventdispatcher.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\ashes\math.h">
+      <Filter>library\ashes</Filter>
+    </ClInclude>
+    <ClInclude Include="res\resource.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="playingfield.h" />
+    <ClInclude Include="polyomino.h" />
+    <ClInclude Include="polyominoshapepool.h" />
+    <ClInclude Include="gameapp.h" />
+    <ClInclude Include="gamecore.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\library\ashes\console.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\consoleapp.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\timermanager.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\winapi.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library\ashes\graph.cpp">
+      <Filter>library\ashes</Filter>
+    </ClCompile>
+    <ClCompile Include="playingfield.cpp" />
+    <ClCompile Include="polyomino.cpp" />
+    <ClCompile Include="polyominoshapepool.cpp" />
+    <ClCompile Include="gameapp.cpp" />
+    <ClCompile Include="gamecore.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\resource.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\shapebook.txt">
+      <Filter>res</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
