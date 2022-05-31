@@ -190,6 +190,7 @@ void MoveSnakeAlongPath(
 
 //==============================================================================
 // GameAI
+// algorithm reference: https://github.com/chuyangliu/snake
 //==============================================================================
 
 GameAI::GameAI()
