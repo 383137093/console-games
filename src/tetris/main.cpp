@@ -2,7 +2,7 @@
 
 int main()
 {
-	GameApp app;
-	app.Run();
-	return 0;
+    GameApp app;
+    app.Run();
+    return 0;
 }

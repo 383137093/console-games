@@ -12,47 +12,47 @@ class GameCore
 
 public:
 
-	GameCore();
-	GameCore(const GameCore&) = delete;
-	~GameCore();
-	GameCore& operator = (const GameCore&) = delete;
+    GameCore();
+    GameCore(const GameCore&) = delete;
+    ~GameCore();
+    GameCore& operator = (const GameCore&) = delete;
 
-	bool IsGameOVer() const;
-	const PlayingField& GetPlayingField() const;
-	const Polyomino& GetPolyomino() const;
-	const Polyomino& GetNextPolyomino() const;
-	int GetDifficultyLevel() const;
-	int GetScore() const;
+    bool IsGameOVer() const;
+    const PlayingField& GetPlayingField() const;
+    const Polyomino& GetPolyomino() const;
+    const Polyomino& GetNextPolyomino() const;
+    int GetDifficultyLevel() const;
+    int GetScore() const;
 
-	void ShiftPolyominoL();
-	void ShiftPolyominoR();
-	void RotatePolyomino();
-	void DescendPolyomino(int max_height);
+    void ShiftPolyominoL();
+    void ShiftPolyominoR();
+    void RotatePolyomino();
+    void DescendPolyomino(int max_height);
 
-	void StartGame();
-	void TickGame();
+    void StartGame();
+    void TickGame();
 
-	ashes::EventDispatcher<void(const Polyomino&)> OnPolyominoTransformed;
-	ashes::EventDispatcher<void(int)>              OnPolyominoPlaced;
-
-private:
-	
-	static const std::vector<ashes::time::Msecs> kDescendCooldowns;
-	static const std::vector<int>                kScoreCoefficients;
-
-	static Polyomino SpawnNewPolyomino();
-	void TryTransformCurrentPolyomino(const Polyomino& polyomino);
-	void PlaceCurrentPolyomino();
+    ashes::EventDispatcher<void(const Polyomino&)> OnPolyominoTransformed;
+    ashes::EventDispatcher<void(int)>              OnPolyominoPlaced;
 
 private:
+    
+    static const std::vector<ashes::time::Msecs> kDescendCooldowns;
+    static const std::vector<int>                kScoreCoefficients;
 
-	bool                   game_over_ = true;
-	PlayingField           field_;
-	Polyomino              polyomino_;
-	Polyomino              next_polyomino_;
-	int                    descend_speed_level_ = 0;
-	ashes::time::TimePoint descend_timing_;
-	int                    score_ = 0;
+    static Polyomino SpawnNewPolyomino();
+    void TryTransformCurrentPolyomino(const Polyomino& polyomino);
+    void PlaceCurrentPolyomino();
+
+private:
+
+    bool                   game_over_ = true;
+    PlayingField           field_;
+    Polyomino              polyomino_;
+    Polyomino              next_polyomino_;
+    int                    descend_speed_level_ = 0;
+    ashes::time::TimePoint descend_timing_;
+    int                    score_ = 0;
 };
 
 #endif

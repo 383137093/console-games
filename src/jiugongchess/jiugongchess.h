@@ -9,54 +9,54 @@ class JiugongChess
 {
 public:
 
-	//==========================================================================
-	// Constants & Types
-	//==========================================================================
+    //==========================================================================
+    // Constants & Types
+    //==========================================================================
 
-	static const int kNumMaxRounds = 999;
+    static const int kNumMaxRounds = 999;
 
-	enum class GameState { UnderWay, Draw, SenteWin, GoteWin };
+    enum class GameState { UnderWay, Draw, SenteWin, GoteWin };
 
-	typedef std::stack<Chessboard::PieceStep> GameRecord;
+    typedef std::stack<Chessboard::PieceStep> GameRecord;
 
-	//==========================================================================
-	// Play game
-	//==========================================================================
+    //==========================================================================
+    // Play game
+    //==========================================================================
 
-	JiugongChess();
-	JiugongChess(const JiugongChess&) = delete;
-	~JiugongChess();
-	JiugongChess& operator = (const JiugongChess&) = delete;
+    JiugongChess();
+    JiugongChess(const JiugongChess&) = delete;
+    ~JiugongChess();
+    JiugongChess& operator = (const JiugongChess&) = delete;
 
-	void NewGame();
-	bool MovePiece(const Chessboard::PieceStep& step);
-	bool BackMove(Chessboard::PlayerSide player);
+    void NewGame();
+    bool MovePiece(const Chessboard::PieceStep& step);
+    bool BackMove(Chessboard::PlayerSide player);
 
-	//==========================================================================
-	// Game info
-	//==========================================================================
+    //==========================================================================
+    // Game info
+    //==========================================================================
 
-	GameState GetGameState() const;
-	const Chessboard& GetChessboard() const;
-	const GameRecord& GetGameRecord() const;
+    GameState GetGameState() const;
+    const Chessboard& GetChessboard() const;
+    const GameRecord& GetGameRecord() const;
 
-	int GetNumSteps() const;
-	int GetNumRounds() const;
-	Chessboard::PlayerSide GetCurrentPlayer() const;
+    int GetNumSteps() const;
+    int GetNumRounds() const;
+    Chessboard::PlayerSide GetCurrentPlayer() const;
 
-	ashes::EventDispatcher<void()> OnNewTurn;
+    ashes::EventDispatcher<void()> OnNewTurn;
 
 private:
 
-	//==========================================================================
-	// Privates
-	//==========================================================================
+    //==========================================================================
+    // Privates
+    //==========================================================================
 
-	void UpdateGameState();
+    void UpdateGameState();
 
-	GameState  game_state_ = GameState::UnderWay;
-	Chessboard chessboard_;
-	GameRecord game_record_;
+    GameState  game_state_ = GameState::UnderWay;
+    Chessboard chessboard_;
+    GameRecord game_record_;
 };
 
 #endif

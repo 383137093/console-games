@@ -10,75 +10,75 @@ class Chessboard
 {
 public:
 
-	//==========================================================================
-	// Constants & Types
-	// sente player: the player who moves first.
-	// gote player: the player who moves second.
-	//==========================================================================
+    //==========================================================================
+    // Constants & Types
+    // sente player: the player who moves first.
+    // gote player: the player who moves second.
+    //==========================================================================
 
-	static const int kNumRows = 3;
-	static const int kNumCols = 3;
-	static const int kNumGrids = kNumRows * kNumCols;
-	static const int kNumPiecesEachPlayer = 3;
-	static const int kNumSpaces = kNumGrids - 2 * kNumPiecesEachPlayer;
-	
-	enum class PlayerSide { Sente, Gote };
-	enum class GridType { Space, SentePiece, GotePiece };
+    static const int kNumRows = 3;
+    static const int kNumCols = 3;
+    static const int kNumGrids = kNumRows * kNumCols;
+    static const int kNumPiecesEachPlayer = 3;
+    static const int kNumSpaces = kNumGrids - 2 * kNumPiecesEachPlayer;
+    
+    enum class PlayerSide { Sente, Gote };
+    enum class GridType { Space, SentePiece, GotePiece };
 
-	typedef ashes::Coord                    Coord;
-	typedef std::pair<Coord, Coord>         PieceStep;
-	typedef std::array<GridType, kNumGrids> GridStorage;
+    typedef ashes::Coord                    Coord;
+    typedef std::pair<Coord, Coord>         PieceStep;
+    typedef std::array<GridType, kNumGrids> GridStorage;
 
-	//==========================================================================
-	// Play game
-	//==========================================================================
-	
-	Chessboard();
-	explicit Chessboard(const GridStorage& grids);
-	~Chessboard();
+    //==========================================================================
+    // Play game
+    //==========================================================================
+    
+    Chessboard();
+    explicit Chessboard(const GridStorage& grids);
+    ~Chessboard();
 
-	bool IsPlayerWin(PlayerSide player) const;
-	void MovePiece(const PieceStep& step);
-	void Reset();
+    bool IsPlayerWin(PlayerSide player) const;
+    void MovePiece(const PieceStep& step);
+    void Reset();
 
-	//==========================================================================
-	// Grids & GridStorage
-	//==========================================================================
+    //==========================================================================
+    // Grids & GridStorage
+    //==========================================================================
 
-	static bool ValidateCoord(const Coord& coord);
-	static int CoordToIndex(const Coord& coord);
-	static Coord IndexToCoord(int index);
+    static bool ValidateCoord(const Coord& coord);
+    static int CoordToIndex(const Coord& coord);
+    static Coord IndexToCoord(int index);
 
-	static bool ValidateGridStorage(const GridStorage& grids);
-	static const GridStorage& GetInitialGridStorage();
-	const GridStorage& GetGridStorage() const;
+    static bool ValidateGridStorage(const GridStorage& grids);
+    static const GridStorage& GetInitialGridStorage();
+    const GridStorage& GetGridStorage() const;
 
-	static int CountGrid(GridType type);
-	GridType GetGridType(const Coord& coord) const;
+    static int CountGrid(GridType type);
+    GridType GetGridType(const Coord& coord) const;
 
-	//==========================================================================
-	// Pieces & Players
-	//==========================================================================
+    //==========================================================================
+    // Pieces & Players
+    //==========================================================================
 
-	static GridType PieceTypeOwnedByPlayer(PlayerSide player);
-	static PlayerSide OwnerPlayerOfPieceType(GridType type);
-	static PlayerSide EnemyOfPlayer(PlayerSide player);
-	
-	bool CanMovePiece(PlayerSide player, const PieceStep& step) const;
-	bool CanMovePiece(const PieceStep& step) const;
-	void GetOptionalMove(const Coord& piece, std::vector<PieceStep>& steps) const;
-	void GetOptionalMove(PlayerSide player, std::vector<PieceStep>& steps) const;
+    static GridType PieceTypeOwnedByPlayer(PlayerSide player);
+    static PlayerSide OwnerPlayerOfPieceType(GridType type);
+    static PlayerSide EnemyOfPlayer(PlayerSide player);
+    
+    bool CanMovePiece(PlayerSide player, const PieceStep& step) const;
+    bool CanMovePiece(const PieceStep& step) const;
+    void GetOptionalMove(const Coord& piece, std::vector<PieceStep>& steps) const;
+    void GetOptionalMove(PlayerSide player, std::vector<PieceStep>& steps) const;
 
 private:
 
-	//==========================================================================
-	// Privates
-	//==========================================================================
+    //==========================================================================
+    // Privates
+    //==========================================================================
 
-	static bool IsGridConnected(int index1, int index2);
-	static std::vector<Coord> FindGridCoords(const GridStorage& grids, GridType type);
-	
-	GridStorage grids_;
+    static bool IsGridConnected(int index1, int index2);
+    static std::vector<Coord> FindGridCoords(const GridStorage& grids, GridType type);
+    
+    GridStorage grids_;
 };
 
 #endif

@@ -35,14 +35,14 @@ WORD BlendColor(WORD dest, WORD src);
 
 struct Border
 {
-	String line_vert;  // character for vertical line.
-	String line_hori;  // character for horizontal line.
-	String corner_tl;  // character for corner top-left.
-	String corner_tr;  // character for corner top-right.
-	String corner_bl;  // character for corner bottom-left.
-	String corner_br;  // character for corner bottom-right.
-	SHORT  width;      // character width at console screen.
-	WORD   color;      // character color attributes.
+    String line_vert;  // character for vertical line.
+    String line_hori;  // character for horizontal line.
+    String corner_tl;  // character for corner top-left.
+    String corner_tr;  // character for corner top-right.
+    String corner_bl;  // character for corner bottom-left.
+    String corner_br;  // character for corner bottom-right.
+    SHORT  width;      // character width at console screen.
+    WORD   color;      // character color attributes.
 };
 
 const Border& BorderPlusSign();         // + + + + + +

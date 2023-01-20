@@ -12,27 +12,27 @@ typedef std::chrono::milliseconds Msecs;
 
 inline TimePoint Now()
 {
-	return Clock::now();
+    return Clock::now();
 }
 
 inline Msecs MsecsBetween(TimePoint from, TimePoint to)
 {
-	return std::chrono::duration_cast<Msecs>(to - from);
+    return std::chrono::duration_cast<Msecs>(to - from);
 }
 
 inline Msecs MsecsFrom(TimePoint t)
 {
-	return MsecsBetween(t, Now());
+    return MsecsBetween(t, Now());
 }
 
 inline Msecs MsecsTo(TimePoint t)
 {
-	return MsecsBetween(Now(), t);
+    return MsecsBetween(Now(), t);
 }
 
 inline void Sleep(Msecs msecs)
 {
-	std::this_thread::sleep_for(msecs);
+    std::this_thread::sleep_for(msecs);
 }
 
 }}
